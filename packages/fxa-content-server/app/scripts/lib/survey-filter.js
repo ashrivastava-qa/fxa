@@ -389,7 +389,8 @@ export const createSurveyFilter = (
   user,
   relier,
   previousParticipationTime,
-  doNotBotherSpan
+  doNotBotherSpan,
+  env
 ) => {
   const fetchUa = createFetchUaFn(window);
   const fetchLangs = createFetchLanguagesFn(window);
@@ -402,11 +403,12 @@ export const createSurveyFilter = (
     if (
       !(
         surveyConfig &&
-        surveyConfig.rate &&
+        parseInt(surveyConfig.rate) > -1 &&
         surveyConfig.conditions &&
-        withinRate(surveyConfig.rate) &&
+        (env === 'development' || withinRate(surveyConfig.rate)) &&
         Object.keys(surveyConfig.conditions).length > 0 &&
-        !participatedRecently(previousParticipationTime, doNotBotherSpan)
+        (env === 'development' ||
+          !participatedRecently(previousParticipationTime, doNotBotherSpan))
       )
     ) {
       return failureRes;
