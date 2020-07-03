@@ -69,16 +69,20 @@ export default class SurveyTargeter {
       }
 
       const selectedSurvey = this._selectSurvey(qualifiedSurveys);
+      const queryParamData = Object.assign(selectedSurvey.conditions, {
+        service: 'content',
+        env: this.env || 'production',
+      });
 
       if (this.env === 'development') {
-        console.info('Satisfactory user data:');
-        console.table(selectedSurvey.conditions);
+        console.info('Query param data:');
+        console.table(queryParamData);
       }
 
       this._storage.set(lastSurveyKey, Date.now());
       const surveyURL = Url.updateSearchString(
         selectedSurvey.survey.url,
-        selectedSurvey.conditions
+        queryParamData
       );
       return new SurveyWrapperView({ surveyURL });
     } catch {
